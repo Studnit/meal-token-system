@@ -3,7 +3,7 @@
 #   DB_URL (jdbc:postgresql://host:5432/mealtoken)  DB_USERNAME  DB_PASSWORD  QR_SECRET  ADMIN_PASSWORD
 spring:
   datasource:
-    url:  ${DB_URL:jdbc:postgresql://postgres.railway.internal:5432/railway}
+    url: ${DB_URL:jdbc:postgresql://postgres.railway.internal:5432/railway}
     username:  ${DB_USERNAME:postgres}
     password: YvYmQcNDeTnIJWjiMZsypddAIcTDDqAc
     hikari:
@@ -17,9 +17,9 @@ server:
 app:
   seed-demo-data: false
   security:
-    qr-secret: ${QR_SECRET}
+    qr-secret: qwertyuiop1234567890 #${QR_SECRET}
   bootstrap:
-    admin-password: ${ADMIN_PASSWORD}
+    admin-password: Admin@123 #${ADMIN_PASSWORD}
 logging:
   level:
     root: INFO
