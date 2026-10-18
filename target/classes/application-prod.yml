@@ -3,9 +3,9 @@
 #   DB_URL (jdbc:postgresql://host:5432/mealtoken)  DB_USERNAME  DB_PASSWORD  QR_SECRET  ADMIN_PASSWORD
 spring:
   datasource:
-    url: ${DB_URL:jdbc:postgresql://postgres.railway.internal:5432/railway} #${DB_URL:jdbc:postgresql://postgres.railway.internal:5432/railway}
-    username:  ${DB_USERNAME:postgres}
-    password:  ${DB_PASSWORD:YvYmQcNDeTnIJWjiMZsypddAIcTDDqAc}
+    url: ${DB_URL:} #${DB_URL:jdbc:postgresql://postgres.railway.internal:5432/railway} jdbc:postgresql://postgres.railway.internal:5432/railway
+    username:  ${DB_USERNAME:} #postgres
+    password:  ${DB_PASSWORD:} #YvYmQcNDeTnIJWjiMZsypddAIcTDDqAc
     hikari:
       maximum-pool-size: ${DB_POOL_SIZE:10}
   thymeleaf:

@@ -4,7 +4,7 @@ spring:
   # Database settings live in the profile files: application-dev.yml (default) and application-prod.yml.
   # Pick one with  SPRING_PROFILES_ACTIVE=prod  or  --spring.profiles.active=prod
   profiles:
-    default: prod
+    default: ${SPRING_PROFILES_ACTIVE:}
   jpa:
     hibernate:
       ddl-auto: validate
