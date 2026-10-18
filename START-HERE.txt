@@ -17,3 +17,9 @@ MEAL TOKEN SYSTEM - how to run
    (Tests need Docker for Testcontainers, or set TEST_DB_URL / TEST_DB_USERNAME / TEST_DB_PASSWORD.)
 5. Sign in at /login with your username, email or mobile number and your password.
    The first Super Admin is created from ADMIN_EMAIL / ADMIN_PASSWORD; its username is the part of the email before the @.
+
+6. Easiest way to start:   ./run-dev.sh   (dev profile)     or     ./run-prod.sh   (prod profile, checks the required settings first)
+   Error "Could not resolve placeholder 'QR_SECRET'" means the PROD profile is active but QR_SECRET (and the other required
+   settings) are not set. Either start the dev profile (unset SPRING_PROFILES_ACTIVE, or set it to dev) or set them:
+     export DB_URL=jdbc:postgresql://localhost:5432/mealtoken DB_USERNAME=... DB_PASSWORD=...
+     export QR_SECRET=$(openssl rand -hex 24) ADMIN_PASSWORD='a strong password'
