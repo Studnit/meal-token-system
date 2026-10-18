@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="card(s, showSlots)" class="card h-100">
+  <div class="card-body">
+    <div class="d-flex align-items-center gap-3 mb-3">
+      <span th:replace="~{fragments/ui :: logo(${s.hotelId}, ${s.hasLogo}, 48)}"></span>
+      <div class="flex-grow-1">
+        <h2 class="h6 m-0" th:text="${s.hotelName}">Hotel</h2>
+        <small class="text-muted" th:text="${s.planName}">Plan</small>
+      </div>
+      <span th:replace="~{fragments/ui :: badge(${s.status})}"></span>
+    </div>
+
+    <div class="bill-strip mb-3" th:if="${s.billed and s.status != 'CANCELLED'}">
+      <div><small class="text-muted" th:text="#{bill.total}">Total</small><strong th:text="${@fmt.money(s.totalAmount)}">0</strong></div>
+      <div><small class="text-muted" th:text="#{bill.paid}">Paid</small><strong class="text-success" th:text="${@fmt.money(s.paidAmount)}">0</strong></div>
+      <div><small class="text-muted" th:text="#{bill.due}">Remaining</small><strong th:classappend="${s.dueAmount.signum() > 0} ? 'text-danger' : 'text-success'" th:text="${@fmt.money(s.dueAmount)}">0</strong></div>
+    </div>
+    <div class="alert alert-warning small py-2" th:if="${s.billed and s.dueAmount.signum() > 0 and s.status != 'CANCELLED'}">
+      <i class="bi bi-hourglass-split"></i> <span th:text="#{bill.pending.notice(${@fmt.money(s.dueAmount)})}">Pending</span>
+      <span th:if="${s.heldTokens > 0}" th:text="#{bill.hold.notice(${s.heldTokens})}">Last tokens are on hold until paid.</span>
+    </div>
+    <div th:if="${s.status == 'ACTIVE' or s.status == 'EXHAUSTED' or s.status == 'EXPIRED' or s.status == 'SUSPENDED'}">
+      <div class="row text-center g-2 mb-2">
+        <div class="col-4"><div class="token-big" th:text="${s.remaining}">0</div><small class="text-muted" th:text="#{receipt.remaining}">Remaining</small></div>
+        <div class="col-4"><div class="h3 m-0" th:text="${s.used}">0</div><small class="text-muted" th:text="#{sub.used}">Used</small></div>
+        <div class="col-4"><div class="h3 m-0" th:text="${s.total}">0</div><small class="text-muted" th:text="#{sub.total}">Total</small></div>
+      </div>
+      <div class="progress mb-3" role="progressbar" th:attr="aria-valuenow=${s.percentUsed},aria-valuemin=0,aria-valuemax=100,aria-label=#{sub.used}">
+        <div class="progress-bar bg-warning" th:style="'width:' + ${s.percentUsed} + '%'"></div></div>
+      <div class="alert small py-2 mb-0 mt-2" th:classappend="${s.alertLevel == 2} ? 'alert-danger' : 'alert-warning'" th:if="${s.alertLevel > 0}" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span th:if="${s.alertLevel == 1}" th:text="#{bill.alert.warn(${s.tokensBeforeHold}, ${@fmt.money(s.dueAmount)})}">Settle</span>
+        <span th:if="${s.alertLevel == 2}" th:text="#{bill.alert.blocked(${@fmt.money(s.dueAmount)})}">Settle</span>
+      </div>
+      <dl class="row small mb-2">
+        <dt class="col-5" th:text="#{sub.start}">Start</dt><dd class="col-7" th:text="${@fmt.date(s.start)}">d</dd>
+        <dt class="col-5" th:text="#{col.expiry}">Expiry</dt><dd class="col-7"><span th:text="${@fmt.date(s.expiry)}">d</span>
+          <span th:if="${s.status == 'ACTIVE'}" class="text-muted" th:text="'(' + #{sub.days.left(${s.daysLeft})} + ')'">(5 days left)</span></dd>
+      </dl>
+      <p class="small text-muted mb-2" th:if="${s.status == 'ACTIVE'}"
+         th:text="${s.tokensExpire} ? #{sub.tokens.expire} : #{sub.tokens.keep}">Unused tokens expire with the subscription.</p>
+    </div>
+    <p th:if="${s.status == 'PENDING'}" class="text-muted small" th:text="#{sub.pending.help}">Awaiting payment confirmation by the hotel.</p>
+
+    <div th:if="${showSlots and s.status == 'ACTIVE'}">
+      <h3 class="h6" th:text="#{sub.today}">Today</h3>
+      <ul class="list-group list-group-flush mb-3">
+        <li class="list-group-item d-flex justify-content-between align-items-center px-0" th:each="sl : ${s.slots}">
+          <span><span th:text="${sl.name}">Lunch</span> <small class="text-muted" th:text="${#temporals.format(sl.start, 'HH:mm')} + '–' + ${#temporals.format(sl.end, 'HH:mm')}">12:00–15:00</small></span>
+          <span th:if="${sl.served}" class="badge text-bg-success" th:text="#{redeem.served}">Served</span>
+          <span th:unless="${sl.served}" class="badge text-bg-secondary" th:text="#{redeem.available}">Available</span>
+        </li>
+      </ul>
+      <th:block th:with="groups=${menuByHotel != null ? menuByHotel[s.hotelId] : null}">
+        <div class="mb-3" th:if="${groups != null and !#lists.isEmpty(groups)}">
+          <h3 class="h6"><i class="bi bi-journal-richtext me-1"></i><span th:text="#{menu.today}">Menu for today</span></h3>
+          <div th:each="g : ${groups}" class="mb-2">
+            <div class="small fw-semibold text-muted" th:text="${g.slotName != null} ? ${g.slotName} : #{menu.allday}">Lunch</div>
+            <ul class="list-unstyled m-0">
+              <li class="d-flex gap-2 align-items-start py-1" th:each="i : ${g.items}">
+                <span class="veg-dot mt-2" th:classappend="${i.veg} ? 'veg' : 'nonveg'"></span>
+                <div class="flex-grow-1"><span th:text="${i.name}" th:classappend="${!i.available} ? 'text-decoration-line-through text-muted'">Dal</span>
+                  <div class="small text-muted" th:if="${i.description != null}" th:text="${i.description}">note</div></div>
+                <span class="badge text-bg-secondary" th:if="${!i.available}" th:text="#{menu.soldout}">Sold out</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </th:block>
+    </div>
+    <div class="d-grid gap-2">
+      <a th:if="${s.redeemable}" class="btn btn-brand" th:href="@{/customer/scan}"><i class="bi bi-qr-code-scan"></i> <span th:text="#{nav.scan}">Scan</span></a>
+      <a th:if="${s.status != 'ACTIVE' and s.status != 'PENDING'}" class="btn btn-outline-secondary" th:href="@{/customer/hotels/{id}(id=${s.hotelId})}"><i class="bi bi-arrow-repeat"></i> <span th:text="#{sub.renew}">Renew</span></a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

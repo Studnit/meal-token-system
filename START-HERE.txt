@@ -1,0 +1,19 @@
+MEAL TOKEN SYSTEM - how to run
+
+1. Extract this zip into a NEW EMPTY folder. Do not extract over an older copy: old files (for example the removed
+   OtpService.java) would stay behind and break the build.
+2. Needs Java 17, Maven 3.9+ and PostgreSQL 14+.
+3. Pick a profile (two are included):
+     dev  (default)  application-dev.yml   local database mealtoken_dev on localhost, user postgres / password postgres,
+                     demo data on. Create it once:   createdb mealtoken_dev
+                     Change with DEV_DB_URL / DEV_DB_USERNAME / DEV_DB_PASSWORD.
+     prod            application-prod.yml  start with SPRING_PROFILES_ACTIVE=prod. Required, no defaults:
+                     DB_URL  DB_USERNAME  DB_PASSWORD  QR_SECRET (16+ chars)  ADMIN_PASSWORD
+   Optional in both: ADMIN_EMAIL, PUBLIC_BASE_URL.
+4. Build and run:   mvn clean verify      then      mvn spring-boot:run                       (dev)
+                                                  SPRING_PROFILES_ACTIVE=prod mvn spring-boot:run     (prod)
+   ALWAYS use "clean". An old target/ folder keeps stale compiled classes (for example OtpCode) and the app then fails
+   with: Schema-validation: missing table [otp_codes].
+   (Tests need Docker for Testcontainers, or set TEST_DB_URL / TEST_DB_USERNAME / TEST_DB_PASSWORD.)
+5. Sign in at /login with your username, email or mobile number and your password.
+   The first Super Admin is created from ADMIN_EMAIL / ADMIN_PASSWORD; its username is the part of the email before the @.

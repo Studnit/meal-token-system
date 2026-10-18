@@ -1,0 +1,15 @@
+# DEV profile (the default): local PostgreSQL, templates reload without a restart, demo data available.
+#   createdb mealtoken_dev   (or: CREATE DATABASE mealtoken_dev;)
+#   mvn spring-boot:run
+spring:
+  datasource:
+    url: ${DEV_DB_URL:jdbc:postgresql://localhost:5432/mealpass}
+    username: ${DEV_DB_USERNAME:nkharose}
+    password: ${DEV_DB_PASSWORD:Nkharose@123!}
+  thymeleaf:
+    cache: false
+app:
+  seed-demo-data: ${SEED_DEMO_DATA:true}     # demo hotel, staff and customers (password Demo#2026pass)
+logging:
+  level:
+    com.mealtoken: DEBUG

@@ -1,0 +1,25 @@
+# PROD profile:  SPRING_PROFILES_ACTIVE=prod
+# Nothing sensitive has a default here: the app refuses to start until these are set.
+#   DB_URL (jdbc:postgresql://host:5432/mealtoken)  DB_USERNAME  DB_PASSWORD  QR_SECRET  ADMIN_PASSWORD
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://postgres.railway.internal:5432/railway}
+    username: ${DB_USERNAME:postgres}
+    password: YvYmQcNDeTnIJWjiMZsypddAIcTDDqAc
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:10}
+  thymeleaf:
+    cache: true
+server:
+  error:
+    include-stacktrace: never
+    include-message: never
+app:
+  seed-demo-data: false
+  security:
+    qr-secret: ${QR_SECRET}
+  bootstrap:
+    admin-password: ${ADMIN_PASSWORD}
+logging:
+  level:
+    root: INFO

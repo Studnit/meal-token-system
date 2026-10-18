@@ -1,0 +1,55 @@
+package com.mealtoken.dto;
+
+import jakarta.validation.constraints.*;
+
+public class RegistrationForm {
+    @NotBlank @Size(max = 150)
+    private String fullName;
+
+    @NotBlank(message = "{validation.username}")
+    @Pattern(regexp = com.mealtoken.util.Validators.USERNAME_REGEX, message = "{validation.username}")
+    private String username;
+
+    @NotBlank @Size(max = 190)
+    @Pattern(regexp = com.mealtoken.util.Validators.EMAIL_REGEX, message = "{validation.email}")
+    private String email;
+
+    @NotBlank(message = "{validation.phone}")
+    @Pattern(regexp = com.mealtoken.util.Validators.MOBILE_REGEX, message = "{validation.phone}")
+    private String phone;
+
+    @NotBlank @Size(min = 8, max = 72)
+    private String password;
+
+    /** CUSTOMER or OWNER only; SUPER_ADMIN/STAFF can never be self-registered. */
+    @NotBlank @Pattern(regexp = "CUSTOMER|OWNER")
+    private String accountType = "CUSTOMER";
+
+    @Size(max = 150)
+    private String hotelName;
+
+    @Size(max = 80)
+    private String city;
+
+    @Size(max = 80)
+    private String area;
+
+    public String getFullName() { return fullName; }
+    public void setFullName(String v) { this.fullName = v; }
+    public String getUsername() { return username; }
+    public void setUsername(String v) { this.username = v; }
+    public String getEmail() { return email; }
+    public void setEmail(String v) { this.email = v; }
+    public String getPhone() { return phone; }
+    public void setPhone(String v) { this.phone = v; }
+    public String getPassword() { return password; }
+    public void setPassword(String v) { this.password = v; }
+    public String getAccountType() { return accountType; }
+    public void setAccountType(String v) { this.accountType = v; }
+    public String getCity() { return city; }
+    public void setCity(String v) { this.city = v; }
+    public String getArea() { return area; }
+    public void setArea(String v) { this.area = v; }
+    public String getHotelName() { return hotelName; }
+    public void setHotelName(String v) { this.hotelName = v; }
+}

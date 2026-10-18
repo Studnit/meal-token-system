@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- Confirm the money actually received (it may be less than what is pending), or reject the payment. Compact 2-column layout. -->
+<th:block th:fragment="form(id, amount, reference, subStatus, area, total, paid)">
+  <form class="pay-form" th:action="@{/{a}/payments/{id}/confirm(a=${area},id=${id})}" method="post"
+        th:attr="data-confirm=#{confirm.payment},data-pending=${amount}">
+    <!-- Total and Already paid come from the subscription; Amount received now and Remaining are editable and always add up -->
+    <label class="pay-field"><small th:text="#{bill.total}">Total</small>
+      <input class="form-control form-control-sm" type="text" readonly tabindex="-1" th:value="${total != null} ? ${@fmt.money(total)} : ${@fmt.money(amount)}"></label>
+    <label class="pay-field"><small th:text="#{bill.paid.before}">Already paid</small>
+      <input class="form-control form-control-sm" type="text" readonly tabindex="-1" th:value="${@fmt.money(paid != null ? paid : 0)}"></label>
+    <label class="pay-field"><small th:text="#{bill.received}">Amount received now</small>
+      <input class="form-control form-control-sm" type="number" name="amount" step="0.01" min="0.01" th:max="${amount}" th:value="${amount}" required data-pay-received></label>
+    <label class="pay-field"><small th:text="#{bill.due}">Remaining</small>
+      <input class="form-control form-control-sm" type="number" step="0.01" min="0" th:max="${amount}" value="0" data-pay-remaining
+             th:attr="aria-label=#{bill.due}"></label>
+    <label class="pay-field"><small th:text="#{col.method}">Method</small>
+      <select class="form-select form-select-sm" name="method">
+        <option value="CASH" th:text="#{status.CASH}">Cash</option>
+        <option value="UPI" th:text="#{status.UPI}" th:selected="${reference != ''}">UPI</option>
+      </select></label>
+    <label class="pay-field"><small th:text="#{col.reference}">Reference</small>
+      <input class="form-control form-control-sm" name="reference" maxlength="100" th:value="${reference}" th:placeholder="#{pay.reference.hint}"></label>
+    <div class="form-check pay-wide m-0" th:if="${subStatus == 'PENDING'}">
+      <input class="form-check-input" type="checkbox" name="activateNow" value="true" th:id="'act' + ${id}">
+      <label class="form-check-label small" th:for="'act' + ${id}" th:text="#{bill.activate}">Activate now</label>
+    </div>
+    <div class="pay-wide pay-buttons">
+      <button class="btn btn-sm btn-success" type="submit"><i class="bi bi-check-lg"></i> <span th:text="#{action.confirm}">Confirm</span></button>
+      <button class="btn btn-sm btn-outline-danger" type="submit" th:attr="form='rej' + ${id}"><i class="bi bi-x-lg"></i> <span th:text="#{action.reject}">Reject</span></button>
+    </div>
+  </form>
+  <form th:id="'rej' + ${id}" th:action="@{/{a}/payments/{id}/reject(a=${area},id=${id})}" method="post" th:attr="data-confirm=#{confirm.reject}"></form>
+</th:block>
+</body>
+</html>
